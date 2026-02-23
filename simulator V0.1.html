@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wastewater Treatment Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h2, h4 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #219150;
+        }
+        .results {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .safe { color: #27ae60; font-weight: bold; }
+        .violation { color: #c0392b; font-weight: bold; }
+        .hidden { display: none; } 
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>University of Khartoum</h2>
+    <h4>Chemical Engineering</h4>
+    <h2>Wastewater Plant Simulator</h2>
+    <p style="text-align:center; font-size: 14px; color: #7f8c8d;">First-Order CSTR Model</p>
+    
+    <div class="form-group">
+        <label for="mode">Select Simulator Mode:</label>
+        <select id="mode" onchange="toggleMode()">
+            <option value="rating">Rating Mode (Evaluate Existing Tank)</option>
+            <option value="design-perf">Design Mode: Performance-Driven (Target BOD)</option>
+            <option value="design-spec">Design Mode: Specification-Driven (Target HRT)</option>
+        </select>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+    <div class="form-group">
+        <label for="flow">Inflow Rate (m³/day):</label>
+        <input type="number" id="flow" value="1000">
+    </div>
+    <div class="form-group">
+        <label for="bod">Raw Influent BOD (mg/L):</label>
+        <input type="number" id="bod" value="300">
+    </div>
+
+    <div class="form-group" id="volume-input-group">
+        <label for="volume">Existing Tank Volume (m³):</label>
+        <input type="number" id="volume" value="500">
+    </div>
+
+    <div class="form-group hidden" id="target-bod-input-group">
+        <label for="target-bod">Target Effluent BOD (mg/L):</label>
+        <input type="number" id="target-bod" value="20">
+    </div>
+
+    <div class="form-group hidden" id="target-hrt-input-group">
+        <label for="target-hrt">Target Residence Time (HRT) in hours:</label>
+        <input type="number" id="target-hrt" value="12">
+    </div>
+
+    <button onclick="runSimulation()">Run Simulation</button>
+
+    <div class="results hidden" id="resultBox">
+        <div id="result-content"></div>
+    </div>
+</div>
+
+<script>
+    const PRIMARY_EFF_BOD = 0.30;   
+    const BIO_DECAY_RATE = 0.8;     
+    const COMPLIANCE_LIMIT = 30.0;  
+
+    // FUNCTION 1: The UI Controller
+    function toggleMode() {
+        let mode = document.getElementById('mode').value;
+        let volGroup = document.getElementById('volume-input-group');
+        let bodGroup = document.getElementById('target-bod-input-group');
+        let hrtGroup = document.getElementById('target-hrt-input-group');
+
+        // Hide all specific inputs first
+        volGroup.classList.add('hidden');
+        bodGroup.classList.add('hidden');
+        hrtGroup.classList.add('hidden');
+
+        // Show only the one matching the selected mode
+        if (mode === 'rating') {
+            volGroup.classList.remove('hidden');
+        } else if (mode === 'design-perf') {
+            bodGroup.classList.remove('hidden');
+        } else if (mode === 'design-spec') {
+            hrtGroup.classList.remove('hidden');
+        }
+        
+        // Hide the result box when switching modes
+        document.getElementById('resultBox').classList.add('hidden');
+    }
+
+    // FUNCTION 2: The Math Engine
+    function runSimulation() {
+        let mode = document.getElementById('mode').value;
+        let flow = parseFloat(document.getElementById('flow').value);
+        let bod_in = parseFloat(document.getElementById('bod').value);
+        
+        let flow_hourly = flow / 24.0;
+        let primary_bod = bod_in * (1 - PRIMARY_EFF_BOD);
+        let htmlOutput = ""; 
+
+        if (mode === 'rating') {
+            // --- 1. RATING MODE ---
+            let volume = parseFloat(document.getElementById('volume').value);
+            let hrt = (flow_hourly > 0) ? (volume / flow_hourly) : 0;
+            let effluent_bod = primary_bod / (1 + BIO_DECAY_RATE * hrt);
+            let removal_eff = ((bod_in - effluent_bod) / bod_in) * 100;
+
+            htmlOutput += `<p><strong>Retention Time (HRT):</strong> ${hrt.toFixed(2)} hours</p>`;
+            htmlOutput += `<p><strong>Calculated Effluent BOD:</strong> ${effluent_bod.toFixed(2)} mg/L</p>`;
+            htmlOutput += `<p><strong>Removal Efficiency:</strong> ${removal_eff.toFixed(1)}%</p>`;
+            
+            if (effluent_bod <= COMPLIANCE_LIMIT) {
+                htmlOutput += `<p><strong>Status:</strong> <span class='safe'>SAFE TO DISCHARGE</span></p>`;
+            } else {
+                htmlOutput += `<p><strong>Status:</strong> <span class='violation'>❌ VIOLATION (Above 30 mg/L)</span></p>`;
+            }
+
+        } else if (mode === 'design-perf') {
+            // --- 2. PERFORMANCE-DRIVEN DESIGN (Target BOD) ---
+            let target_bod = parseFloat(document.getElementById('target-bod').value);
+
+            if (target_bod >= primary_bod) {
+                htmlOutput = `<p class='violation'>Error: Target BOD must be lower than the post-primary BOD (${primary_bod.toFixed(1)} mg/L).</p>`;
+            } else {
+                let req_hrt = ((primary_bod / target_bod) - 1) / BIO_DECAY_RATE;
+                let req_volume = req_hrt * flow_hourly;
+                let removal_eff = ((bod_in - target_bod) / bod_in) * 100;
+
+                htmlOutput += `<p><strong>Target Effluent BOD:</strong> ${target_bod.toFixed(2)} mg/L</p>`;
+                htmlOutput += `<p><strong>Required Retention Time (HRT):</strong> ${req_hrt.toFixed(2)} hours</p>`;
+                htmlOutput += `<p style="font-size: 18px; color: #2980b9;"><strong>Required Tank Volume:</strong> <b>${req_volume.toFixed(2)} m³</b></p>`;
+                htmlOutput += `<p><strong>Removal Efficiency:</strong> ${removal_eff.toFixed(1)}%</p>`;
+            }
+
+        } else if (mode === 'design-spec') {
+            // --- 3. SPECIFICATION-DRIVEN DESIGN (Target HRT) ---
+            let target_hrt = parseFloat(document.getElementById('target-hrt').value);
+            let req_volume = target_hrt * flow_hourly;
+            let effluent_bod = primary_bod / (1 + BIO_DECAY_RATE * target_hrt);
+            let removal_eff = ((bod_in - effluent_bod) / bod_in) * 100;
+
+            htmlOutput += `<p><strong>Target Retention Time (HRT):</strong> ${target_hrt.toFixed(2)} hours</p>`;
+            htmlOutput += `<p style="font-size: 18px; color: #2980b9;"><strong>Required Tank Volume:</strong> <b>${req_volume.toFixed(2)} m³</b></p>`;
+            htmlOutput += `<p><strong>Predicted Effluent BOD:</strong> ${effluent_bod.toFixed(2)} mg/L</p>`;
+            htmlOutput += `<p><strong>Removal Efficiency:</strong> ${removal_eff.toFixed(1)}%</p>`;
+            
+            if (effluent_bod <= COMPLIANCE_LIMIT) {
+                htmlOutput += `<p><strong>Status:</strong> <span class='safe'>SAFE TO DISCHARGE</span></p>`;
+            } else {
+                htmlOutput += `<p><strong>Status:</strong> <span class='violation'>❌ VIOLATION (Above 30 mg/L)</span></p>`;
+            }
+        }
+
+        // Inject and display
+        document.getElementById('result-content').innerHTML = htmlOutput;
+        document.getElementById('resultBox').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
