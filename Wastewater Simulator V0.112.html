@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wastewater Treatment Simulator</title>
+    <link rel="stylesheet" href="style.css">
+    
+
+</head>
+<body>
+
+<div class="container">
+    <h2>University of Khartoum</h2>
+    <h4>Chemical Engineering</h4>
+    <h2>Wastewater Plant Simulator</h2>
+    <p style="text-align:center; font-size: 14px; color: #7f8c8d;">First-Order CSTR Model</p>
+    
+    <div class="form-group">
+        <label for="mode">Select Simulator Mode:</label>
+        <select id="mode" onchange="toggleMode()">
+            <option value="rating">Rating Mode (Evaluate Existing Tank)</option>
+            <option value="design-perf">Design Mode: Performance-Driven (Target BOD)</option>
+            <option value="design-spec">Design Mode: Specification-Driven (Target HRT)</option>
+        </select>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+    <div class="form-group">
+        <label for="flow">Inflow Rate (m³/day):</label>
+        <input type="number" id="flow" value="">
+    </div>
+    <div class="form-group">
+        <label for="bod">Raw Influent BOD (mg/L):</label>
+        <input type="number" id="bod" value="">
+    </div>
+
+    <div class="form-group" id="volume-input-group">
+        <label for="volume">Existing Tank Volume (m³):</label>
+        <input type="number" id="volume" value="">
+    </div>
+
+    <div class="form-group hidden" id="target-bod-input-group">
+        <label for="target-bod">Target Effluent BOD (mg/L):</label>
+        <input type="number" id="target-bod" value="20">
+    </div>
+
+    <div class="form-group hidden" id="target-hrt-input-group">
+        <label for="target-hrt">Target Residence Time (HRT) in hours:</label>
+        <input type="number" id="target-hrt" value="12">
+    </div>
+
+    <button onclick="runSimulation()">Run Simulation</button>
+
+    <div class="results hidden" id="resultBox">
+        <div id="result-content"></div>
+    </div>
+    <div style="text-align:center; font-size: 12px; color: #7f8c8d; margin-top: 25px; border-top: 1px solid #eee; padding-top: 10px;">
+    <p style="margin: 0 0 5px 0;">Developed by: <strong>Awab Abdallah</strong></p>
+    <p style="margin: 0;">GitHub: <a href="https://github.com/AwabChemE" target="_blank" style="color: #2980b9; text-decoration: none; font-weight: bold;">@AwabChemE</a></p>
+</div>
+</div>
+
+
+
+
+
+    <!-- Link the JavaScript file (spaces must be URL-encoded as %20) -->
+    <script src="JavaScript%20MathEngine.js"></script>
+
+</body>
+</html>
