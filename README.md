@@ -1,56 +1,42 @@
-# Wastewater-Plant-Simulator (V0.1)
+# Municipal Wastewater Treatment Simulator (Phase 1)
 
-> **Version 0.1 of a decade-long project to replace commercial process bloatware. Starting today with a lightweight, 3-mode CSTR prototype to perfect the core mathematical engine.**
+**Developer:** Awab Abdallah (@AwabChemE)  
+* **Project Supervisor:** <b>[Dr Taj Alasfia M Barakat](https://lms.uofk.edu/user/profile.php?id=6065)</b>
+**Institution:** University of Khartoum, Department of Chemical Engineering  
 
-##  Architecture Overview
-This repository contains a client-side, browser-based Continuous Stirred-Tank Reactor (CSTR) simulation engine. Designed to bypass the heavy local processing power required by legacy commercial software, this tool executes steady-state biochemical mass balances and kinetic decay algorithms instantly via pure JavaScript logic. 
+![Simulator Interface](Simulator Interface.png)
 
-Currently optimized for wastewater biological oxygen demand (BOD) removal, the engine acts as the foundational module for a larger, scalable digital twin architecture.
+##  Project Overview
+This repository contains a custom, dynamic computational simulator developed to model the secondary biological treatment phase of a municipal wastewater treatment plant. The design basis is specifically localized to model a decentralized, neighborhood-scale facility ($1000~m^3/day$) to address post-conflict infrastructure rehabilitation needs in Khartoum, Sudan.
 
-##  The Mathematical Engine
-The simulator relies on first-order decay kinetics integrated into a steady-state CSTR mass balance. 
+The computational engine utilizes a first-order Continuous Stirred-Tank Reactor (CSTR) mathematical model to calculate Biochemical Oxygen Demand (BOD) removal, dynamic unit sizing, and overall environmental compliance.
 
-**The Governing Equation:**
-$$C_{out} = \frac{C_{in}}{1 + k \cdot HRT}$$
+##  Key Computational Features
+* **Dynamic Operational Modes:** Instantly toggle between "Rating Mode" (evaluating existing tanks) and "Specification-Driven Design" (targeting specific HRTs or Effluent limits).
+* **Automated Architectural Sizing:** The algorithm automatically integrates physical manufacturing constraints. If a required volume exceeds standard highway transportation limits ($40.0~m^3$), the software automatically redesigns the plant architecture into parallel operational units.
+* **Real-Time Compliance Tracking:** Continuously calculates Overall Removal Efficiency to ensure effluent meets strict environmental discharge benchmarks.
 
-Where:
-* $C_{out}$ = Effluent BOD concentration (mg/L)
-* $C_{in}$ = Influent BOD concentration after 30% primary clarification (mg/L)
-* $k$ = First-order biological decay rate constant (default: 0.8 $day^{-1}$)
-* $HRT$ = Hydraulic Retention Time (hours)
+##  Repository Structure
+To ensure the simulator functions correctly, the core files must be kept together in the same directory.
+* `Simulator V0.112.html` - The front-end user interface.
+* `style.css` - The styling and layout framework.
+* `JavaScript MathEngine.js` - The core algorithmic engine containing the CSTR mass balance logic.
+* `SuperPro_Validation_AwabChemE.spf` - The native SuperPro Designer file used for rigorous kinetic validation.
 
-##  The 3-Mode Logic Gate
-The software algorithm is structured to handle three distinct engineering scenarios, switching execution paths dynamically without requiring page reloads.
+##  How to Run the Simulator
+This simulator is designed for rapid deployment and accessibility. No local compilers, servers, or external dependencies are required.
+1. Download or clone this repository to your local machine.
+2. Ensure `Simulator V0.112.html`, `style.css`, and `JavaScript MathEngine.js` are located in the **exact same folder**.
+3. Double-click `Simulator V0.112.html` to open the simulator in any modern web browser (Chrome, Edge, Firefox, Safari).
 
-### 1. Rating Mode (Evaluate Existing Infrastructure)
-Evaluates the performance capabilities of an already-built concrete reactor. 
-* **Input:** Existing Tank Volume ($V$) and Inflow Rate ($Q$).
-* **Output:** Calculates resulting $HRT$, predicted Effluent BOD, and Removal Efficiency.
+##  Commercial Validation
+The custom mathematical algorithms within `script.js` were rigorously validated against **SuperPro Designer**. A multi-point validation study tracking biological decay across 8, 12, and 16-hour Hydraulic Retention Times (HRTs) yielded a stable, conservative variance of less than 4% between this software and the commercial industry standard. 
 
-### 2. Performance-Driven Design (Strict Compliance)
-Calculates the exact physical tank dimensions required to hit a legal environmental limit.
-* **Input:** Target Effluent BOD (e.g., strict 30.0 mg/L limit).
-* **Output:** Back-calculates the required $HRT$ algebraically and sizes the exact Tank Volume ($V$) required to achieve it.
+*(See the included `.spf` file to check the validation flowsheet).*
 
-### 3. Specification-Driven Design (Standard Engineering Constraints)
-Mirrors the logic of commercial simulation tools (like SuperPro Designer) by using standard civil engineering rules of thumb.
-* **Input:** Target Residence Time ($HRT$).
-* **Output:** Calculates the required Tank Volume ($V$) and predicts the resulting Effluent BOD.
-
-##  Tech Stack & Deployment
-* **Frontend UI:** HTML5 & CSS3 (Responsive, dynamic CSS class toggling).
-* **Computational Backend:** Vanilla JavaScript (ES6+).
-* **Execution:** 100% Client-Side. Zero server latency. 
-
-##  5th-Year & Long-Term Roadmap
-Following the strategic academic direction set for the 5th-year graduation project, future iterations will expand this single module into a full-scale plant simulator:
-- [ ] Comprehensive Material and Energy Balances (حسابات المادة والطاقة) across all plant units.
-- [ ] Real-time capital and operational expenditure (CAPEX/OPEX) cost estimation modules.
-- [ ] Multi-unit configuration (series/parallel CSTR routing).
-- [ ] Server-side execution migration (C++/Node.js) to protect proprietary algorithms.
+##  Future Scope (Phase 2)
+For the final fifth-year expansion of this project, the computational architecture will be transitioned into a robust **C++ environment**. This will allow the engine to handle the significantly higher computational loads and complex iterative loops required for secondary settling dynamics, advanced sludge digestion, and comprehensive global energy balances.
 
 ## 🏛️ Acknowledgments & Ownership
-* **Lead Developer & Systems Architect:** <b>[Awab Abdallah](https://github.com/AwabChemE)</b>
-* **Academic Institution:** <b>Department of Chemical Engineering, University of Khartoum</b>
 * **Project Supervisor:** <b>[Dr Taj Alasfia M Barakat](https://lms.uofk.edu/user/profile.php?id=6065)</b> (Who provided the strategic vision for expanding the simulator's capabilities into comprehensive mass/energy balances and cost estimation).
 * **License:** Released under the [MIT License](LICENSE) - free to use, modify, and distribute.
