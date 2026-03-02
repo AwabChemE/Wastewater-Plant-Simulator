@@ -4,7 +4,7 @@
 * **Project Supervisor:** <b>[Dr Taj Alasfia M Barakat](https://lms.uofk.edu/user/profile.php?id=6065)</b>
 **Institution:** University of Khartoum, Department of Chemical Engineering  
 
-![Simulator Interface](Simulator Interface.png)
+![Simulator Interface](https://github.com/AwabChemE/Wastewater-Plant-Simulator/blob/main/Simulator%20Interface.png)
 
 ##  Project Overview
 This repository contains a custom, dynamic computational simulator developed to model the secondary biological treatment phase of a municipal wastewater treatment plant. The design basis is specifically localized to model a decentralized, neighborhood-scale facility ($1000~m^3/day$) to address post-conflict infrastructure rehabilitation needs in Khartoum, Sudan.
